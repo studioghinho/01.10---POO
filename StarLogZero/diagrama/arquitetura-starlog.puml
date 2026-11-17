@@ -1,0 +1,59 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "br.com.starlog.model" {
+  class Carga {
+    - codigoRastreio: String {readOnly}
+    - categoria: String
+    - pesoKg: double
+    - valorSeguro: double
+    + Carga(codigoRastreio: String, categoria: String, pesoKg: double, valorSeguro: double)
+    + getCodigoRastreio(): String
+    + getCategoria(): String
+    + getPesoKg(): double
+    + getValorSeguro(): double
+    + equals(objeto: Object): boolean
+    + hashCode(): int
+    + toString(): String
+  }
+
+  class ModuloCarga {
+    - idModulo: String
+    - capacidadeMaxima: int
+    - cargas: List<Carga>
+    + ModuloCarga(idModulo: String, capacidadeMaxima: int)
+    + getIdModulo(): String
+    + getCapacidadeMaxima(): int
+    + carregarCarga(carga: Carga): void
+    + calcularSeguroTotal(): double
+    + contarPorCategoria(categoria: String): long
+    + calcularSeguroPesadas(pesoCorte: double): double
+  }
+
+  class BaseLancamento {
+    - modulos: Map<String, ModuloCarga>
+    + cadastrarModulo(modulo: ModuloCarga): void
+    + buscarModulo(idModulo: String): ModuloCarga
+  }
+}
+
+package "br.com.starlog.exception" {
+  class CapacidadeExcedidaException {
+    + CapacidadeExcedidaException(mensagem: String)
+  }
+}
+
+package "br.com.starlog.main" {
+  class MainResgate {
+    + main(args: String[]): void
+  }
+}
+
+ModuloCarga "1" *-- "0..*" Carga : cargas
+BaseLancamento "1" o-- "0..*" ModuloCarga : modulos
+CapacidadeExcedidaException --|> Exception
+MainResgate ..> Carga
+MainResgate ..> ModuloCarga
+MainResgate ..> CapacidadeExcedidaException
+ModuloCarga ..> CapacidadeExcedidaException
+@enduml
